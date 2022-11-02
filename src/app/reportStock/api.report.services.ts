@@ -6,18 +6,24 @@ import { Injectable } from '@angular/core';
 })
 export class ApiReportComponent {
     constructor(private http: HttpClient) {
-
     }
-    Get_Data_24hMoney() {
+
+    Get_Data_24hMoney(): Observable<any> {
+        debugger;
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',
             params: { "locale": "vi", "symbol": "shb", "period": 2, "view": 1, "page": 1, "expanded": true }
         };
-        return this.http.get<any>('https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-report', httpOptions)
+        return new Observable<any>(obs =>{
+            this.http.get<any>('https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-report', httpOptions)
             .pipe().subscribe(x => {
-                console.log(x);
+                if(x['status'] === 200){
+                    // this.headersReport24h = x['headers'];
+                    return obs.next(x);
+                }
             });
+        });
     }
     Get_Data_Dstock() {
         const httpOptions: any =
@@ -46,4 +52,9 @@ export class ApiReportComponent {
         };
         return this.http.get<any>('https://finfo-api.vndirect.com.vn/v4/financial_models', httpOptions).pipe()
     }
+}
+export class HeaderReport24h{
+    quarter: number;
+    type: string;
+    year: number
 }
