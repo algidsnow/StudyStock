@@ -12,7 +12,7 @@ export class ApiReportComponent {
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',
-            params: { "locale": "vi", "symbol": "shb", "period": 2, "view": 1, "page": 1, "expanded": true }
+            params: { "locale": "vi", "symbol": "mbb", "period": 2, "view": 1, "page": 1, "expanded": true }
         };
         return new Observable<any>(obs =>{
             this.http.get<any>('https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-report', httpOptions)
