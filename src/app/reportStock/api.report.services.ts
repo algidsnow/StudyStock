@@ -9,7 +9,6 @@ export class ApiReportComponent {
     }
 
     Get_Data_24hMoney(): Observable<any> {
-        debugger;
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',

@@ -1,5 +1,37 @@
 <div class=" content">
-    <div class="col-md-12">
+  <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table tablesorter table-bordered">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> 
+        <span [style.paddingLeft.px]="40"> Name </span>
+      </th>
+      <td mat-cell *matCellDef="let data"> 
+        <button mat-icon-button 
+                [style.visibility]="!data.expandable ? 'hidden' : ''"
+                [style.marginLeft.px]="data.level * 32"
+                class="custom-button-icon"
+                (click)="treeControl.toggle(data)">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(data) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+  
+        {{data.name}}
+      </td>
+    </ng-container> 
+  
+    <ng-container matColumnDef="count">
+      <th mat-header-cell *matHeaderCellDef> Count </th>
+      <td mat-cell *matCellDef="let data"> {{data.count}} </td>
+    </ng-container> 
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+    <!-- <div class="col-md-12">
         <div class="card">
           <div class=" card-header">
             <h4 class=" card-title">Báo cáo</h4>
@@ -8,57 +40,21 @@
             <div class="table-responsive">
               <table class=" table tablesorter table-bordered" id="">
                 <thead class=" text-primary">
-                  <tr *ngFor="let header of headersReport24h; index as i">
-                    <th>Q {{header.quarter}} / {{header.year}}</th>
+                  <tr>
+                    <th *ngFor="let header of headersReport24h; index as i">{{header.type | fomatType}} Q {{header.quarter}} / {{header.year}}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Dakota Rice</td>
-                    <td>Niger</td>
-                    <td>Oud-Turnhout</td>
-                    <td class=" text-center">$36,738</td>
-                  </tr>
-                  <tr>
-                    <td>Minerva Hooper</td>
-                    <td>CuraÃ§ao</td>
-                    <td>Sinaai-Waas</td>
-                    <td class=" text-center">$23,789</td>
-                  </tr>
-                  <tr>
-                    <td>Sage Rodriguez</td>
-                    <td>Netherlands</td>
-                    <td>Baileux</td>
-                    <td class=" text-center">$56,142</td>
-                  </tr>
-                  <tr>
-                    <td>Philip Chaney</td>
-                    <td>Korea, South</td>
-                    <td>Overland Park</td>
-                    <td class=" text-center">$38,735</td>
-                  </tr>
-                  <tr>
-                    <td>Doris Greene</td>
-                    <td>Malawi</td>
-                    <td>Feldkirchen in KÃ¤rnten</td>
-                    <td class=" text-center">$63,542</td>
-                  </tr>
-                  <tr>
-                    <td>Mason Porter</td>
-                    <td>Chile</td>
-                    <td>Gloucester</td>
-                    <td class=" text-center">$78,615</td>
-                  </tr>
-                  <tr>
-                    <td>Jon Porter</td>
-                    <td>Portugal</td>
-                    <td>Gloucester</td>
-                    <td class=" text-center">$98,615</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
+</div>
+  </div>
+  </div>
+  </div> 
 </div>

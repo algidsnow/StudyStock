@@ -9,6 +9,11 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { Report24hmoneyComponent } from "./report24hmoney/report24hmoney.component";
 import { ReportStockRoutes, ReportStockRoutingModule } from "./report-stock.routing";
 import { ReportRootComponent } from './report-root/report-root.component';
+import { FomatTypePipe } from "../common/pipes/fomat-type.pipe";
+import { PipeModule } from "../common/modules/pipe.module";
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   imports: [
@@ -17,13 +22,16 @@ import { ReportRootComponent } from './report-root/report-root.component';
     FormsModule,
     HttpClientModule,
     NgbModule,
-    ReportStockRoutingModule
+    ReportStockRoutingModule,
+    MatTreeModule,
+    MatIconModule,
+    MatTableModule
   ],
   declarations: [
      Report24hmoneyComponent,
     // RtlComponent
-  
-    ReportRootComponent
+    ReportRootComponent,
   ],
+  // providers: [FomatTypePipe]
 })
 export class ReportStockModule {}
