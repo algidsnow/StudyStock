@@ -9,11 +9,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { Report24hmoneyComponent } from "./report24hmoney/report24hmoney.component";
 import { ReportStockRoutes, ReportStockRoutingModule } from "./report-stock.routing";
 import { ReportRootComponent } from './report-root/report-root.component';
-import { FomatTypePipe } from "../common/pipes/fomat-type.pipe";
-import { PipeModule } from "../common/modules/pipe.module";
-import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
-import {MatTableModule} from '@angular/material/table';
+import { TreeTableModule } from 'primeng/treetable';
 
 @NgModule({
   imports: [
@@ -23,9 +19,7 @@ import {MatTableModule} from '@angular/material/table';
     HttpClientModule,
     NgbModule,
     ReportStockRoutingModule,
-    MatTreeModule,
-    MatIconModule,
-    MatTableModule
+    TreeTableModule
   ],
   declarations: [
      Report24hmoneyComponent,

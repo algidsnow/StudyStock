@@ -1,3 +1,16 @@
 .custom-button-icon{
     border: 0px;
 }
+.p-treetable .p-treetable-tbody > tr > td{
+    border-width: 1px 1px 1px 1px !important;
+}
+.fixed-col{
+    position: sticky;
+    background-color: white;
+    width: 350px !important;
+    left: 0px;
+}
+.p-treetable table{
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}

@@ -1,7 +1,7 @@
 {
-  "name": "black-dashboard-angular",
+  "name": "Financial Report",
   "version": "1.2.0",
-  "description": "Black Dasboard Angular, a Creative Tim Desgin. Coded by Creative Tim",
+  "description": "Financial Report by HieuMD",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -77,7 +77,7 @@
     "core-js": "3.15.2",
     "ngx-toastr": "14.0.0",
     "primeicons": "^6.0.1",
-    "primeng": "^14.1.2",
+    "primeng": "^12.2.3",
     "rxjs": "7.2.0",
     "tslib": "2.3.0",
     "zone.js": "^0.11.3"
@@ -87,9 +87,9 @@
     "@angular/cli": "12.1.2",
     "@angular/compiler-cli": "12.1.2",
     "@angular/language-service": "12.1.2",
-    "@types/node": "16.3.2",
     "@types/jasmine": "3.8.1",
     "@types/jasminewd2": "2.0.10",
+    "@types/node": "16.3.2",
     "codelyzer": "6.0.2",
     "jasmine-core": "3.8.0",
     "jasmine-spec-reporter": "7.0.0",
