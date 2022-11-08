@@ -4,7 +4,14 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-2">
-                <input class="form-control" placeholder="Mã ck" />
+                <input class="form-control" placeholder="Mã ck" [(ngModel)]="option.StockCode" name="StockCode" (keydown.enter)="SearchReport()"/>
+              </div>
+              <div class="col-md-2">
+                <select [(ngModel)]="option.Period" name="Period" class="form-control" (change)="SearchReport()">
+                  <option *ngFor="let op of finacialReportTypes" [value]="op.Id">
+                      {{op.Name}}
+                  </option>
+                </select>
               </div>
             </div>
           </div>

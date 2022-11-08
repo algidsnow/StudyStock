@@ -8,11 +8,11 @@ export class ApiReportComponent {
     constructor(private http: HttpClient) {
     }
 
-    Get_Data_24hMoney(): Observable<any> {
+    Get_Data_24hMoney(option: OptionReport24h): Observable<any> {
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',
-            params: { "locale": "vi", "symbol": "mbb", "period": 2, "view": 1, "page": 1, "expanded": true }
+            params: { "locale": "vi", "symbol": option.StockCode, "period": 1, "view": option.Period, "page": 1, "expanded": true }
         };
         return new Observable<any>(obs =>{
             this.http.get<any>('https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-report', httpOptions)
@@ -57,3 +57,26 @@ export class HeaderReport24h{
     type: string;
     year: number
 }
+export class OptionReport24h{
+    constructor(){
+        this.StockCode = "";
+        this.Period = 1;
+    }
+    StockCode: string;
+    Period: number;
+}
+export class CommonEnumData{
+    Id: number;
+    Name: string;
+}
+
+export  enum FinanciReportType{
+    BalanceSheet = 1,
+    IncomeStatement = 2,
+    StatementOfCashFlows = 3
+}
+export const FinanciReportTypeLabel = new Map<number, string>([
+    [FinanciReportType.BalanceSheet, 'Bảng cân đối kế toán'],
+    [FinanciReportType.IncomeStatement, 'Báo cáo kết quả kinh doanh'],
+    [FinanciReportType.StatementOfCashFlows, 'Lưu chuyển tiền tệ']
+  ]);
