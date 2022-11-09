@@ -16,7 +16,9 @@ export class Report24hmoneyComponent implements OnInit {
   finacialReportTypes : any[] =[];
   option: OptionReport24h = new OptionReport24h();
   tableData: TreeNode[] = [];
+  resultApi: any[] = [];
   cols: any[] = [{ field: "col", header: "Tiêu đề" }];
+  calculator: string = "";
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
   constructor(private api: ApiReportComponent) {
   }
@@ -61,6 +63,7 @@ export class Report24hmoneyComponent implements OnInit {
         }
       });
       this.tableData = this.tableData.slice();
+      this.resultApi = x.data.rows;
     });
   }
 }
@@ -98,6 +101,9 @@ FomatHeader(hearder: HeaderReport24h): string {
   }
    numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+onclick_Table(val){
+  this.calculator += "{" + val.node.data.col + "}"
 }
 }
 

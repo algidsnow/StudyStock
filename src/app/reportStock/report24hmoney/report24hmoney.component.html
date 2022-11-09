@@ -14,6 +14,14 @@
                 </select>
               </div>
             </div>
+            <div class="row">
+              <div class="col-md-11 mt-2">
+                <textarea style="width:100%" placeholder="Công thức" [(ngModel)]="calculator" name="calculator"></textarea>
+              </div>
+              <div class="col-md-1">
+                <button class="btn btn-success">Tính</button>
+              </div>
+            </div>
           </div>
             <div class="table-responsive">
               <p-treeTable
@@ -22,6 +30,8 @@
               [value]="tableData"
               [scrollable]="true"
               [style]="{width:'1500px'}"
+              scrollHeight="66vh"
+              [virtualScroll]="true"
               >
               <ng-template pTemplate="colgroup" let-columns>
                   <colgroup>
@@ -43,7 +53,7 @@
                   let-rowData="rowData" 
                   let-columns="columns">
                   <tr>
-                      <td *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
+                      <td (click)="onclick_Table(rowNode)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
                           <p-treeTableToggler 
                               [rowNode]="rowNode" 
                               *ngIf="i == 0">

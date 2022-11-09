@@ -12,7 +12,7 @@ export class ApiReportComponent {
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',
-            params: { "locale": "vi", "symbol": option.StockCode, "period": 1, "view": option.Period, "page": 1, "expanded": true }
+            params: { "locale": "vi", "symbol": option.StockCode, "period": 2, "view": option.Period, "page": 1, "expanded": true }
         };
         return new Observable<any>(obs =>{
             this.http.get<any>('https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-report', httpOptions)
@@ -59,7 +59,7 @@ export class HeaderReport24h{
 }
 export class OptionReport24h{
     constructor(){
-        this.StockCode = "";
+        this.StockCode = "mbb";
         this.Period = 1;
     }
     StockCode: string;
