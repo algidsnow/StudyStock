@@ -10,6 +10,7 @@ import { Report24hmoneyComponent } from "./report24hmoney/report24hmoney.compone
 import { ReportStockRoutes, ReportStockRoutingModule } from "./report-stock.routing";
 import { ReportRootComponent } from './report-root/report-root.component';
 import { TreeTableModule } from 'primeng/treetable';
+import { ShareModule } from "../common/modules/share.module";
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { TreeTableModule } from 'primeng/treetable';
     HttpClientModule,
     NgbModule,
     ReportStockRoutingModule,
-    TreeTableModule
+    TreeTableModule,
+    ShareModule
   ],
   declarations: [
      Report24hmoneyComponent,
