@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ApiReportComponent, FinanciReportTypeLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
+import { ApiReportComponent, CreateReport24hData, FinanciReportTypeLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { TreeNode } from 'primeng/api';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -14,23 +15,42 @@ import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class Report24hmoneyComponent implements OnInit {
   finacialReportTypes: any[] = [];
   option: OptionReport24h = new OptionReport24h();
+  dropdownSettings : IDropdownSettings;
   tableData: TreeNode[] = [];
   resultApi: any[] = [];
   cols: any[] = [{ field: 'col', header: 'Tiêu đề' }];
-  calculator =  '';
-  calculatorName = '';
+  // calculator =  '';
+  // calculatorName = '';
+  model: CreateReport24hData = new CreateReport24hData();
   closeResult = '';
   modalReference: any;
+  multipleSelect = [];
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
   constructor(private api: ApiReportComponent, private modalService: NgbModal) {
   }
   ngOnInit(): void {
     this.GetFinacialReportType();
     this.GetData();
+    this.dropdownSettings = {
+      singleSelection: false,
+      idField: 'field',
+      textField: 'header',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
+  }
+  onItemSelect(item: any) {
+    console.log(item);
+  }
+  onSelectAll(items: any) {
+    console.log(items);
   }
   GetData() {
     if (this.option.StockCode) {
       this.cols = [{ field: "col", header: "Tiêu đề" }];
+      this.multipleSelect = [];
       this.tableData = [];
       this.api.Get_Data_24hMoney(this.option).subscribe(x => {
         console.log(x);
@@ -41,8 +61,12 @@ export class Report24hmoneyComponent implements OnInit {
             field: fomatHeader,
             header: fomatHeader
           }
-          this.cols.push(header)
+          this.cols.push(header);
+          if(fomatHeader.indexOf('%') < 0){
+            this.multipleSelect.push(header);
+          }
         });
+        this.model.SelectedCols = this.multipleSelect;
         let rowParent: any;
         // tslint:disable-next-line: variable-name
         let rowChild_lv2: TreeNode;
@@ -105,26 +129,34 @@ export class Report24hmoneyComponent implements OnInit {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
   onclick_Table(val) {
-    this.calculator += '{' + val.node.data.col + '}';
+    this.model.Calculator += '{' + val.node.data.col + '}';
   }
   CalculateRow(){
-    const match = this.RegexData(this.calculator);
     const node = {
       data: {
-        col: this.calculatorName,
+        col: this.model.CalculatorName,
       },
       expanded: true,
       children: []
     }
-    for (let i = 1; i < this.cols.length; i=i+ 2) {
+    const match = this.RegexData(this.model.Calculator);
+    for (let i = 0; i < this.model.SelectedCols.length; i++) {
       let objData = {};
-      match.forEach(element => {
-        const getCol =  this.resultApi.find(x=> x.name=== element);
-        objData[element] = getCol.values[i-1];
-       });
-      const calculateStr  =   '{result:' +this.FomatString(this.calculator, objData) + '}';
+      let calculateStr = '';
+      if(match && match.length > 0){
+        match.forEach(element => {
+          const getCol =  this.resultApi.find(x=> x.name=== element);
+          objData[element] = getCol.values[i];
+         });
+      }
+       if(objData){
+         calculateStr  =   '{result:' +this.FomatString(this.model.Calculator, objData) + '}';
+       }
+       else{
+        calculateStr  =   '{result:' + this.model.Calculator + '}';
+       }
       const resultCalculate = this.looseJsonParse(calculateStr);
-      const colField = this.cols[i].field;
+      const colField = this.model.SelectedCols[i].field;
       node.data[colField] = resultCalculate.result.toFixed(2);
     }
     this.tableData.push(node);

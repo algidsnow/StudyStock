@@ -11,6 +11,7 @@ import { ReportStockRoutes, ReportStockRoutingModule } from "./report-stock.rout
 import { ReportRootComponent } from './report-root/report-root.component';
 import { TreeTableModule } from 'primeng/treetable';
 import { ShareModule } from "../common/modules/share.module";
+import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { ShareModule } from "../common/modules/share.module";
     NgbModule,
     ReportStockRoutingModule,
     TreeTableModule,
-    ShareModule
+    ShareModule,
+    NgMultiSelectDropDownModule.forRoot()
   ],
   declarations: [
      Report24hmoneyComponent,

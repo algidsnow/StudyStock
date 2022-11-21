@@ -65,6 +65,16 @@ export class OptionReport24h{
     StockCode: string;
     Period: number;
 }
+export class CreateReport24hData{
+    constructor(){
+        this.Calculator  = '';
+        this.CalculatorName = '';
+        this.SelectedCols = [];
+    }
+    Calculator: string;
+    CalculatorName: string;
+    SelectedCols: any[]
+}
 export class CommonEnumData{
     Id: number;
     Name: string;
