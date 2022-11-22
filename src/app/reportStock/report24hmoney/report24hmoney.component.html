@@ -16,7 +16,7 @@
             </div>
             <div class="row">
               <div class="col-md-11 mt-2">
-                <textarea style="width:100%" placeholder="Công thức" [(ngModel)]="model.Calculator" name="Calculator"></textarea>
+                <textarea style="width:100%" placeholder="Công thức" [(ngModel)]="model.Calculator" name="Calculator" #calculator></textarea>
               </div>
               <div class="col-md-1">
                 <button class="btn btn-success" (click)="open(content)" [disabled]="!model.Calculator">Tính</button>

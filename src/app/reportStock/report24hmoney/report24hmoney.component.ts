@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ApiReportComponent, CreateReport24hData, FinanciReportTypeLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { FlatTreeControl } from '@angular/cdk/tree';
+import { CdkTreeNodeToggle, FlatTreeControl } from '@angular/cdk/tree';
 import { TreeNode } from 'primeng/api';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +13,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
   encapsulation: ViewEncapsulation.None,
 })
 export class Report24hmoneyComponent implements OnInit {
+  @ViewChild('calculator') calculator: ElementRef;
   finacialReportTypes: any[] = [];
   option: OptionReport24h = new OptionReport24h();
   dropdownSettings : IDropdownSettings;
@@ -93,6 +94,25 @@ export class Report24hmoneyComponent implements OnInit {
       });
     }
   }
+
+
+  RecursionData(data:TreeNode[], col:string):TreeNode {
+    let result;
+     // tslint:disable-next-line: prefer-for-of
+     for(let i = 0; i < data.length; i++) {
+        const element = data[i];
+        if(element.data.col === col){
+        return element;
+        }
+        if(element.children.length > 0){
+          result =   this.RecursionData(element.children, col);
+          if(result){
+           break;
+          }
+        }
+      }
+      return result;
+     }
   SearchReport() {
     this.GetData();
   }
@@ -130,6 +150,9 @@ export class Report24hmoneyComponent implements OnInit {
   }
   onclick_Table(val) {
     this.model.Calculator += '{' + val.node.data.col + '}';
+    this.calculator.nativeElement.focus();
+
+    var a = this.RecursionData(this.tableData, val.node.data.col);
   }
   CalculateRow(){
     const node = {
