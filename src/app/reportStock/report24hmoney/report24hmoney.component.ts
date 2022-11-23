@@ -6,6 +6,7 @@ import { TreeNode } from 'primeng/api';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { CommonServiceComponent } from 'src/app/common/service/common.services';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -27,7 +28,7 @@ export class Report24hmoneyComponent implements OnInit {
   modalReference: any;
   multipleSelect = [];
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
-  constructor(private api: ApiReportComponent, private modalService: NgbModal) {
+  constructor(private api: ApiReportComponent, private modalService: NgbModal, private common: CommonServiceComponent) {
   }
   ngOnInit(): void {
     this.GetFinacialReportType();
@@ -101,7 +102,7 @@ export class Report24hmoneyComponent implements OnInit {
      // tslint:disable-next-line: prefer-for-of
      for(let i = 0; i < data.length; i++) {
         const element = data[i];
-        if(element.data.col === col){
+        if(this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(col)){
         return element;
         }
         if(element.children.length > 0){
@@ -113,6 +114,30 @@ export class Report24hmoneyComponent implements OnInit {
       }
       return result;
      }
+
+     RecursionReplaceDataTable(data:TreeNode[], node:TreeNode) {
+      let result;
+       // tslint:disable-next-line: prefer-for-of
+       for(let i = 0; i < data.length; i++) {
+          const element = data[i];
+          if(this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(node.data.col)){
+              element.data.forEach(el => {
+                if( node.data[el] && ( +element.data[el] === 0 || !element.data[el] )){
+                  element.data[el] = node.data[el];
+                }
+              });
+          return true;
+          }
+          if(element.children.length > 0){
+            result =   this.RecursionReplaceDataTable(element.children, node);
+            if(result){
+             break;
+            }
+          }
+        }
+        return result;
+       }
+
   SearchReport() {
     this.GetData();
   }
@@ -151,8 +176,6 @@ export class Report24hmoneyComponent implements OnInit {
   onclick_Table(val) {
     this.model.Calculator += '{' + val.node.data.col + '}';
     this.calculator.nativeElement.focus();
-
-    var a = this.RecursionData(this.tableData, val.node.data.col);
   }
   CalculateRow(){
     const node = {
@@ -168,8 +191,10 @@ export class Report24hmoneyComponent implements OnInit {
       let calculateStr = '';
       if(match && match.length > 0){
         match.forEach(element => {
-          const getCol =  this.resultApi.find(x=> x.name=== element);
-          objData[element] = getCol.values[i];
+          const getCol = this.RecursionData(this.tableData, element);
+          if(getCol){
+            objData[element] = + getCol.data[this.model.SelectedCols[i].field].replaceAll(',','')
+          }
          });
       }
        if(objData){
