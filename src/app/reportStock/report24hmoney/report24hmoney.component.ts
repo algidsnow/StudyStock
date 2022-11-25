@@ -207,7 +207,18 @@ export class Report24hmoneyComponent implements OnInit {
       const colField = this.model.SelectedCols[i].field;
       node.data[colField] = resultCalculate.result.toFixed(2);
     }
-    this.tableData.push(node);
+    // tslint:disable-next-line: max-line-length
+    const existRowInTable = this.tableData.find(x=> this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
+    if(existRowInTable){
+      Object.keys(node.data).forEach(element => {
+          if(element !== 'col' && node.data[element]){
+            existRowInTable.data[element] = node.data[element];
+          }
+      });
+    }
+    else{
+      this.tableData.push(node);
+    }
     this.tableData = this.tableData.slice();
     this.modalReference.close();
   }
