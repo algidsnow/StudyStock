@@ -173,9 +173,11 @@ export class Report24hmoneyComponent implements OnInit {
   numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-  onclick_Table(val) {
-    this.model.Calculator += '{' + val.node.data.col + '}';
+  onclick_Table(row, index) {
+    this.model.Calculator += '{' + row.node.data.col + '}';
     this.calculator.nativeElement.focus();
+    const colField = this.cols[index].field;
+   console.log(row.node.data[colField]);
   }
   CalculateRow(){
     const node = {
@@ -193,7 +195,7 @@ export class Report24hmoneyComponent implements OnInit {
         match.forEach(element => {
           const getCol = this.RecursionData(this.tableData, element);
           if(getCol){
-            objData[element] = + getCol.data[this.model.SelectedCols[i].field].replaceAll(',','')
+            objData[element] = + getCol.data[this.model.SelectedCols[i].field].replace(/\,/gi, '')
           }
          });
       }
@@ -201,7 +203,7 @@ export class Report24hmoneyComponent implements OnInit {
          calculateStr  =   '{result:' +this.FomatString(this.model.Calculator, objData) + '}';
        }
        else{
-        var replaceComma = this.model.Calculator.replace(/\,/gi,"")
+        const replaceComma = this.model.Calculator.replace(/\,/gi, '')
         calculateStr  =   '{result:' + replaceComma + '}';
        }
       const resultCalculate = this.looseJsonParse(calculateStr);

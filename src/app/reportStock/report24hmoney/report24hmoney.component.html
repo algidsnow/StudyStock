@@ -7,10 +7,20 @@
                 <input class="form-control" placeholder="Mã ck" [(ngModel)]="option.StockCode" name="StockCode" (keydown.enter)="SearchReport()"/>
               </div>
               <div class="col-md-2">
-                <select [(ngModel)]="option.Period" name="Period" class="form-control" (change)="SearchReport()">
+                <select [(ngModel)]="option.View" name="View" class="form-control" (change)="SearchReport()">
                   <option *ngFor="let op of finacialReportTypes" [value]="op.Id">
                       {{op.Name}}
                   </option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <select [(ngModel)]="option.Period" name="Period" class="form-control" (change)="SearchReport()">
+                  <option [value]="2">
+                     Theo quý
+                  </option>
+                  <option [value]="1">
+                    Theo Năm
+                 </option>
                 </select>
               </div>
             </div>
@@ -53,7 +63,7 @@
                   let-rowData="rowData" 
                   let-columns="columns">
                   <tr>
-                      <td (dblclick)="onclick_Table(rowNode)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;cursor: pointer;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
+                      <td (dblclick)="onclick_Table(rowNode,i)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;cursor: pointer;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
                           <p-treeTableToggler 
                               [rowNode]="rowNode" 
                               *ngIf="i == 0">
