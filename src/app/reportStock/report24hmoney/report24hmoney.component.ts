@@ -166,7 +166,7 @@ export class Report24hmoneyComponent implements OnInit {
     for (let i = 1; i < cols.length; i++) {
       const colField = cols[i].field;
       const colData = datafill.values[i - 1]
-      node.data[colField] = !colData ? "N/A" : typeof colData === "number" ? this.numberWithCommas(colData) : colData;
+      node.data[colField] = !colData ? "0" : typeof colData === "number" ? this.numberWithCommas(colData) : colData;
     }
     return node;
   }
@@ -197,15 +197,16 @@ export class Report24hmoneyComponent implements OnInit {
           }
          });
       }
-       if(objData){
+       if(Object.keys(objData).length > 0 ){
          calculateStr  =   '{result:' +this.FomatString(this.model.Calculator, objData) + '}';
        }
        else{
-        calculateStr  =   '{result:' + this.model.Calculator + '}';
+        var replaceComma = this.model.Calculator.replace(/\,/gi,"")
+        calculateStr  =   '{result:' + replaceComma + '}';
        }
       const resultCalculate = this.looseJsonParse(calculateStr);
       const colField = this.model.SelectedCols[i].field;
-      node.data[colField] = resultCalculate.result.toFixed(2);
+      node.data[colField] = resultCalculate.result
     }
     // tslint:disable-next-line: max-line-length
     const existRowInTable = this.tableData.find(x=> this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
@@ -238,7 +239,7 @@ looseJsonParse(obj) {
 }
 // Dùng regex lấy data trong {}
 RegexData(str){
-  const match = str.match(/(?<=({))[a-za-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹý ,]*(?=(}))/g);
+  const match = str.match(/(?<=({))[a-za-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹý , /]*(?=(}))/g);
   return match;
 }
 

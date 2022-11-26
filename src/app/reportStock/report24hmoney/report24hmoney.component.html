@@ -53,7 +53,7 @@
                   let-rowData="rowData" 
                   let-columns="columns">
                   <tr>
-                      <td (click)="onclick_Table(rowNode)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
+                      <td (dblclick)="onclick_Table(rowNode)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;cursor: pointer;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
                           <p-treeTableToggler 
                               [rowNode]="rowNode" 
                               *ngIf="i == 0">
