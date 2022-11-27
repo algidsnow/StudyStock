@@ -81,13 +81,17 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #createForm="ngForm" enctype="multipart/form-data" class="form-horizontal"  novalidate autocomplete="off">
           <div class="mb-3">
             <label>Tên chỉ số: </label>
               <input
+                type="text"
+                required
                 class="form-control"
                 name="CalculatorName"
+                #CalculatorName="ngModel"
                 [(ngModel)]="model.CalculatorName"
+                [class.is-invalid]="CalculatorName.invalid && CalculatorName.touched"
               />
           </div>
           <div class="mb-3">
@@ -107,7 +111,7 @@
       </div>
       <div class="modal-footer">
         <div class="modal-footer-space">
-          <button type="button" class="btn btn-outline-dark" (click)="CalculateRow()" >Save</button>
+          <button type="button" class="btn btn-outline-dark" (click)="CalculateRow()"  [disabled]="createForm.form.invalid" >Save</button>
           <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Close click')">Đóng</button>
         </div>
       </div>

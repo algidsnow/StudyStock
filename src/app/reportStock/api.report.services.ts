@@ -1,13 +1,14 @@
 import { catchError, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 @Injectable({
     providedIn: 'root'
 })
 export class ApiReportComponent {
+    _urlApi = environment.LocalAPI
     constructor(private http: HttpClient) {
     }
-
     Get_Data_24hMoney(option: OptionReport24h): Observable<any> {
         const httpOptions: any =
         {
@@ -51,6 +52,18 @@ export class ApiReportComponent {
         };
         return this.http.get<any>('https://finfo-api.vndirect.com.vn/v4/financial_models', httpOptions).pipe()
     }
+    r1_Post_Data(model, url: string): Observable<any> {
+        const options: any = {
+          ContentType: 'application/json; charset=utf-8',
+        };
+        return this.http.post<any>(this._urlApi + url, model, options);
+      }
+      r1_Get_Data(url: string): Observable<any> {
+        const options: any = {
+          ContentType: 'application/json; charset=utf-8',
+        };
+        return this.http.post<any>(this._urlApi + url, options);
+      }
 }
 export class HeaderReport24h{
     quarter: number;

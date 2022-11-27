@@ -7,6 +7,7 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { CommonServiceComponent } from 'src/app/common/service/common.services';
+import { CalculationFormula } from 'src/model/CalculationFormula';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -27,6 +28,7 @@ export class Report24hmoneyComponent implements OnInit {
   closeResult = '';
   modalReference: any;
   multipleSelect = [];
+  options: string[] = ['One', 'Two', 'Three'];
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
   constructor(private api: ApiReportComponent, private modalService: NgbModal, private common: CommonServiceComponent) {
   }
@@ -49,6 +51,7 @@ export class Report24hmoneyComponent implements OnInit {
   onSelectAll(items: any) {
     console.log(items);
   }
+  GetListFormula
   GetData() {
     if (this.option.StockCode) {
       this.cols = [{ field: "col", header: "Tiêu đề" }];
@@ -173,11 +176,9 @@ export class Report24hmoneyComponent implements OnInit {
   numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-  onclick_Table(row, index) {
-    this.model.Calculator += '{' + row.node.data.col + '}';
+  onclick_Table(val) {
+    this.model.Calculator += '{' + val.node.data.col + '}';
     this.calculator.nativeElement.focus();
-    const colField = this.cols[index].field;
-   console.log(row.node.data[colField]);
   }
   CalculateRow(){
     const node = {
@@ -187,6 +188,7 @@ export class Report24hmoneyComponent implements OnInit {
       expanded: true,
       children: []
     }
+    let isSaveFormula = false;
     const match = this.RegexData(this.model.Calculator);
     for (let i = 0; i < this.model.SelectedCols.length; i++) {
       let objData = {};
@@ -195,23 +197,26 @@ export class Report24hmoneyComponent implements OnInit {
         match.forEach(element => {
           const getCol = this.RecursionData(this.tableData, element);
           if(getCol){
-            objData[element] = + getCol.data[this.model.SelectedCols[i].field].replace(/\,/gi, '')
+            objData[element] =  getCol.data[this.model.SelectedCols[i].field];
           }
          });
       }
        if(Object.keys(objData).length > 0 ){
-         calculateStr  =   '{result:' +this.FomatString(this.model.Calculator, objData) + '}';
+        // tslint:disable-next-line: no-shadowed-variable
+        const replaceComma = this.FomatString(this.model.Calculator, objData).replace(/\,/gi,'')
+         calculateStr  =   '{result:' +replaceComma + '}';
+         isSaveFormula = true;
        }
        else{
-        const replaceComma = this.model.Calculator.replace(/\,/gi, '')
+        const replaceComma = this.model.Calculator.replace(/\,/gi,'')
         calculateStr  =   '{result:' + replaceComma + '}';
        }
       const resultCalculate = this.looseJsonParse(calculateStr);
       const colField = this.model.SelectedCols[i].field;
-      node.data[colField] = resultCalculate.result
+      node.data[colField] = resultCalculate.result.toFixed(2);
     }
-    // tslint:disable-next-line: max-line-length
-    const existRowInTable = this.tableData.find(x=> this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
+  // tslint:disable-next-line: max-line-length
+  const existRowInTable = this.tableData.find(x=> this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
     if(existRowInTable){
       Object.keys(node.data).forEach(element => {
           if(element !== 'col' && node.data[element]){
@@ -221,6 +226,16 @@ export class Report24hmoneyComponent implements OnInit {
     }
     else{
       this.tableData.push(node);
+    }
+    if(isSaveFormula){
+      const formulaModel:CalculationFormula = {
+        Name: this.model.CalculatorName,
+        Caculate: this.model.Calculator,
+        Search_Filed : this.common.nonAccentVietnamese(this.model.CalculatorName)
+      }
+      this.api.r1_Post_Data(formulaModel, 'api/CalculationsFomula').subscribe(res =>{
+        console.log(res);
+      });
     }
     this.tableData = this.tableData.slice();
     this.modalReference.close();
