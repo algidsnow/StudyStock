@@ -1,124 +1,120 @@
 <div class=" content">
   <div class="col-md-12">
-        <div class="card">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-2">
-                <input class="form-control" placeholder="Mã ck" [(ngModel)]="option.StockCode" name="StockCode" (keydown.enter)="SearchReport()"/>
-              </div>
-              <div class="col-md-2">
-                <select [(ngModel)]="option.View" name="View" class="form-control" (change)="SearchReport()">
-                  <option *ngFor="let op of finacialReportTypes" [value]="op.Id">
-                      {{op.Name}}
-                  </option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <select [(ngModel)]="option.Period" name="Period" class="form-control" (change)="SearchReport()">
-                  <option [value]="2">
-                     Theo quý
-                  </option>
-                  <option [value]="1">
-                    Theo Năm
-                 </option>
-                </select>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-11 mt-2">
-                <textarea style="width:100%" placeholder="Công thức" [(ngModel)]="model.Calculator" name="Calculator" #calculator></textarea>
-              </div>
-              <div class="col-md-1">
-                <button class="btn btn-success" (click)="open(content)" [disabled]="!model.Calculator">Tính</button>
-              </div>
-            </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-2">
+            <input class="form-control" placeholder="Mã ck" [(ngModel)]="option.StockCode" name="StockCode"
+              (keydown.enter)="SearchReport()" />
           </div>
-            <div class="table-responsive">
-              <p-treeTable
-              #myTab 
-              [columns]="cols" 
-              [value]="tableData"
-              [scrollable]="true"
-              [style]="{width:'1500px'}"
-              scrollHeight="66vh"
-              [virtualScroll]="true"
-              >
-              <ng-template pTemplate="colgroup" let-columns>
-                  <colgroup>
-                      <col *ngFor="let col of columns"  [ngStyle]="{'width': col.field === 'col' ? '350px' : '150px'}"/>
-                  </colgroup>
-              </ng-template>
-            
-              <ng-template pTemplate="header" let-columns>
-                  <tr>
-                      <th *ngFor="let col of columns"  [ngClass]="{'fixed-col': col.field === 'col'}">
-                          {{ col.header }}
-                      </th>
-                  </tr>
-              </ng-template>
-            
-              <ng-template 
-                  pTemplate="body" 
-                  let-rowNode 
-                  let-rowData="rowData" 
-                  let-columns="columns">
-                  <tr>
-                      <td (dblclick)="onclick_Table(rowNode,i)" *ngFor="let col of columns; let i = index" style="border-width: 1px 1px 1px 1px;cursor: pointer;" [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"  [ngClass]="{'fixed-col': col.field === 'col'}">
-                          <p-treeTableToggler 
-                              [rowNode]="rowNode" 
-                              *ngIf="i == 0">
-                          </p-treeTableToggler>
-                          {{ rowData[col.field] }}
-                      </td>
-                  </tr>
-              </ng-template>
-          </p-treeTable>
-
-    <!--Modal-->
-    <ng-template #content let-modal>
-      <div class="modal-header">
-        <!-- <h4 class="modal-title" id="modal-basic-title">Profile update</h4> -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-      </div>
-      <div class="modal-body">
-        <form #createForm="ngForm" enctype="multipart/form-data" class="form-horizontal"  novalidate autocomplete="off">
-          <div class="mb-3">
-            <label>Tên chỉ số: </label>
-              <input
-                type="text"
-                required
-                class="form-control"
-                name="CalculatorName"
-                #CalculatorName="ngModel"
-                [(ngModel)]="model.CalculatorName"
-                [class.is-invalid]="CalculatorName.invalid && CalculatorName.touched"
-              />
+          <div class="col-md-2">
+            <select [(ngModel)]="option.View" name="View" class="form-control" (change)="SearchReport()">
+              <option *ngFor="let op of finacialReportTypes" [value]="op.Id">
+                {{op.Name}}
+              </option>
+            </select>
           </div>
-          <div class="mb-3">
-            <label>Chọn cột: </label>
-            <ng-multiselect-dropdown
-            [placeholder]="'chọn cột'"
-            [settings]="dropdownSettings"
-            [data]="multipleSelect"
-            [(ngModel)]="model.SelectedCols"
-            (onSelect)="onItemSelect($event)"
-            (onSelectAll)="onSelectAll($event)"
-            name = "SelectedCols"
-          >
-          </ng-multiselect-dropdown>
+          <div class="col-md-2">
+            <select [(ngModel)]="option.Period" name="Period" class="form-control" (change)="SearchReport()">
+              <option [value]="2">
+                Theo quý
+              </option>
+              <option [value]="1">
+                Theo Năm
+              </option>
+            </select>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <div class="modal-footer-space">
-          <button type="button" class="btn btn-outline-dark" (click)="CalculateRow()"  [disabled]="createForm.form.invalid" >Save</button>
-          <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Close click')">Đóng</button>
+         
+          <div class="col-md-2">
+          <!-- #docregion input -->
+              <input [formControl]="control" type="text"
+                     placeholder="Pick one"
+                     aria-label="Number"
+                     class="form-control"
+                     [matAutocomplete]="auto">
+          <!-- #enddocregion input -->
+          <!-- #docregion mat-autocomplete -->
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let option of filteredOptions | async"  [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-11 mt-2">
+            <textarea style="width:100%" placeholder="Công thức" [(ngModel)]="model.Calculator" name="Calculator"
+              #calculator></textarea>
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-success" (click)="open(content)" [disabled]="!model.Calculator">Tính</button>
+          </div>
         </div>
       </div>
-    </ng-template>      
+      <div class="table-responsive">
+        <p-treeTable #myTab [columns]="cols" [value]="tableData" [scrollable]="true" [style]="{width:'1500px'}"
+          scrollHeight="66vh" [virtualScroll]="true">
+          <ng-template pTemplate="colgroup" let-columns>
+            <colgroup>
+              <col *ngFor="let col of columns" [ngStyle]="{'width': col.field === 'col' ? '350px' : '150px'}" />
+            </colgroup>
+          </ng-template>
+
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns" [ngClass]="{'fixed-col': col.field === 'col'}">
+                {{ col.header }}
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr>
+              <td (dblclick)="onclick_Table(rowNode,i)" *ngFor="let col of columns; let i = index"
+                style="border-width: 1px 1px 1px 1px;cursor: pointer;"
+                [ngStyle]="{'color':  +rowData[col.field] < 0 ? 'red' : ''}"
+                [ngClass]="{'fixed-col': col.field === 'col'}">
+                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0">
+                </p-treeTableToggler>
+                {{ rowData[col.field] }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-treeTable>
+
+        <!--Modal-->
+        <ng-template #content let-modal>
+          <div class="modal-header">
+            <!-- <h4 class="modal-title" id="modal-basic-title">Profile update</h4> -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+          </div>
+          <div class="modal-body">
+            <form #createForm="ngForm" enctype="multipart/form-data" class="form-horizontal" novalidate
+              autocomplete="off">
+              <div class="mb-3">
+                <label>Tên chỉ số: </label>
+                <input type="text" required class="form-control" name="CalculatorName" #CalculatorName="ngModel"
+                  [(ngModel)]="model.CalculatorName"
+                  [class.is-invalid]="CalculatorName.invalid && CalculatorName.touched" />
+              </div>
+              <div class="mb-3">
+                <label>Chọn cột: </label>
+                <ng-multiselect-dropdown [placeholder]="'chọn cột'" [settings]="dropdownSettings"
+                  [data]="multipleSelect" [(ngModel)]="model.SelectedCols" (onSelect)="onItemSelect($event)"
+                  (onSelectAll)="onSelectAll($event)" name="SelectedCols">
+                </ng-multiselect-dropdown>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <div class="modal-footer-space">
+              <button type="button" class="btn btn-outline-dark" (click)="CalculateRow()"
+                [disabled]="createForm.form.invalid">Save</button>
+              <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Close click')">Đóng</button>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
   </div>
-  </div>
-  </div> 
 </div>
-
-

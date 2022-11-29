@@ -8,6 +8,8 @@ import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { CommonServiceComponent } from 'src/app/common/service/common.services';
 import { CalculationFormula } from 'src/model/CalculationFormula';
+import { map, Observable, startWith } from 'rxjs';
+import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -16,6 +18,7 @@ import { CalculationFormula } from 'src/model/CalculationFormula';
 })
 export class Report24hmoneyComponent implements OnInit {
   @ViewChild('calculator') calculator: ElementRef;
+  control = new FormControl('');
   finacialReportTypes: any[] = [];
   option: OptionReport24h = new OptionReport24h();
   dropdownSettings : IDropdownSettings;
@@ -29,10 +32,15 @@ export class Report24hmoneyComponent implements OnInit {
   modalReference: any;
   multipleSelect = [];
   options: string[] = ['One', 'Two', 'Three'];
+  filteredOptions: Observable<string[]>;
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
   constructor(private api: ApiReportComponent, private modalService: NgbModal, private common: CommonServiceComponent) {
   }
   ngOnInit(): void {
+    this.filteredOptions = this.control.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
     this.GetFinacialReportType();
     this.GetData();
     this.dropdownSettings = {
@@ -45,13 +53,20 @@ export class Report24hmoneyComponent implements OnInit {
       allowSearchFilter: true
     };
   }
+  private _filter(value: string): string[] {
+    const filterValue = this._normalizeValue(value);
+    return this.options.filter(street => this._normalizeValue(street).includes(filterValue));
+  }
+  private _normalizeValue(value: string) {
+    return value.toLowerCase().replace(/\s/g, '');
+  }
   onItemSelect(item: any) {
     console.log(item);
   }
   onSelectAll(items: any) {
     console.log(items);
   }
-  GetListFormula
+  // GetListFormula
   GetData() {
     if (this.option.StockCode) {
       this.cols = [{ field: "col", header: "Tiêu đề" }];

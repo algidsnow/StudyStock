@@ -13,6 +13,9 @@ import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
 import {MatTreeModule} from '@angular/material/tree';
 import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
+import { MaterialModule } from "src/material.module";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   imports: [
@@ -25,6 +28,9 @@ import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
     AppRoutingModule,
     ToastrModule.forRoot(),
     MatTreeModule,
+    MaterialModule,
+    MatFormFieldModule,
+    MatInputModule,
     NgMultiSelectDropDownModule.forRoot()
 
   ],
