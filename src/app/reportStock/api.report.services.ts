@@ -75,10 +75,12 @@ export class OptionReport24h{
         this.StockCode = "mbb";
         this.Period = 2;
         this.View = 1;
+        this.FormularType = 1;
     }
     StockCode: string;
     Period: number;
     View: number;
+    FormularType?: number;
 }
 export class CreateReport24hData{
     constructor(){
@@ -105,3 +107,13 @@ export const FinanciReportTypeLabel = new Map<number, string>([
     [FinanciReportType.IncomeStatement, 'Báo cáo kết quả kinh doanh'],
     [FinanciReportType.StatementOfCashFlows, 'Lưu chuyển tiền tệ']
   ]);
+
+  export  enum FormulaTypeEnum{
+    Col = 1,
+    Number = 2,
+}
+export const FormulaTypeEnumLabel = new Map<number, string>([
+    [FormulaTypeEnum.Col, 'Theo cột'],
+    [FormulaTypeEnum.Number, 'Theo chỉ số'],
+  ]);
+

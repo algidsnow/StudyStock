@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ApiReportComponent, CreateReport24hData, FinanciReportTypeLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
+import { ApiReportComponent, CreateReport24hData, FinanciReportTypeLabel, FormulaTypeEnum, FormulaTypeEnumLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { CdkTreeNodeToggle, FlatTreeControl } from '@angular/cdk/tree';
 import { TreeNode } from 'primeng/api';
@@ -10,6 +10,7 @@ import { CommonServiceComponent } from 'src/app/common/service/common.services';
 import { CalculationFormula } from 'src/model/CalculationFormula';
 import { map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import { ModelEnums } from 'src/app/common/Model/CommonModel';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -20,8 +21,9 @@ export class Report24hmoneyComponent implements OnInit {
   @ViewChild('calculator') calculator: ElementRef;
   control = new FormControl('');
   finacialReportTypes: any[] = [];
+  formulaTypes: ModelEnums[] = [];
   option: OptionReport24h = new OptionReport24h();
-  dropdownSettings : IDropdownSettings;
+  dropdownSettings: IDropdownSettings;
   tableData: TreeNode[] = [];
   resultApi: any[] = [];
   cols: any[] = [{ field: 'col', header: 'Tiêu đề' }];
@@ -42,6 +44,7 @@ export class Report24hmoneyComponent implements OnInit {
       map(value => this._filter(value || '')),
     );
     this.GetFinacialReportType();
+    this.GetFormulaTypes()
     this.GetData();
     this.dropdownSettings = {
       singleSelection: false,
@@ -53,19 +56,28 @@ export class Report24hmoneyComponent implements OnInit {
       allowSearchFilter: true
     };
   }
-  private _filter(value: string): string[] {
-    const filterValue = this._normalizeValue(value);
-    return this.options.filter(street => this._normalizeValue(street).includes(filterValue));
+  /** Get Values Enum */
+  GetFinacialReportType() {
+    FinanciReportTypeLabel.forEach((label, value) => {
+      const data = {
+        Id: value,
+        Name: label
+      }
+      this.finacialReportTypes.push(data)
+    });
   }
-  private _normalizeValue(value: string) {
-    return value.toLowerCase().replace(/\s/g, '');
+  GetFormulaTypes() {
+    FormulaTypeEnumLabel.forEach((label, value) => {
+      const data: ModelEnums = {
+        Id: value,
+        Name: label
+      }
+      this.formulaTypes.push(data)
+    });
   }
-  onItemSelect(item: any) {
-    console.log(item);
-  }
-  onSelectAll(items: any) {
-    console.log(items);
-  }
+  /** End Get values enum */
+
+  /** Get values from api */
   // GetListFormula
   GetData() {
     if (this.option.StockCode) {
@@ -82,7 +94,7 @@ export class Report24hmoneyComponent implements OnInit {
             header: fomatHeader
           }
           this.cols.push(header);
-          if(fomatHeader.indexOf('%') < 0){
+          if (fomatHeader.indexOf('%') < 0) {
             this.multipleSelect.push(header);
           }
         });
@@ -113,61 +125,68 @@ export class Report24hmoneyComponent implements OnInit {
       });
     }
   }
-
-
-  RecursionData(data:TreeNode[], col:string):TreeNode {
-    let result;
-     // tslint:disable-next-line: prefer-for-of
-     for(let i = 0; i < data.length; i++) {
-        const element = data[i];
-        if(this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(col)){
-        return element;
-        }
-        if(element.children.length > 0){
-          result =   this.RecursionData(element.children, col);
-          if(result){
-           break;
-          }
-        }
-      }
-      return result;
-     }
-
-     RecursionReplaceDataTable(data:TreeNode[], node:TreeNode) {
-      let result;
-       // tslint:disable-next-line: prefer-for-of
-       for(let i = 0; i < data.length; i++) {
-          const element = data[i];
-          if(this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(node.data.col)){
-              element.data.forEach(el => {
-                if( node.data[el] && ( +element.data[el] === 0 || !element.data[el] )){
-                  element.data[el] = node.data[el];
-                }
-              });
-          return true;
-          }
-          if(element.children.length > 0){
-            result =   this.RecursionReplaceDataTable(element.children, node);
-            if(result){
-             break;
-            }
-          }
-        }
-        return result;
-       }
-
   SearchReport() {
     this.GetData();
   }
-  GetFinacialReportType() {
-    FinanciReportTypeLabel.forEach((label, value) => {
-      const data = {
-        Id: value,
-        Name: label
-      }
-      this.finacialReportTypes.push(data)
-    });
+  handleTable
+  /** End Get values from api */
+  private _filter(value: string): string[] {
+    const filterValue = this._normalizeValue(value);
+    return this.options.filter(street => this._normalizeValue(street).includes(filterValue));
   }
+  private _normalizeValue(value: string) {
+    return value.toLowerCase().replace(/\s/g, '');
+  }
+  onItemSelect(item: any) {
+    console.log(item);
+  }
+  onSelectAll(items: any) {
+    console.log(items);
+  }
+
+
+  RecursionData(data: TreeNode[], col: string): TreeNode {
+    let result;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      if (this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(col)) {
+        return element;
+      }
+      if (element.children.length > 0) {
+        result = this.RecursionData(element.children, col);
+        if (result) {
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  RecursionReplaceDataTable(data: TreeNode[], node: TreeNode) {
+    let result;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      if (this.common.nonAccentVietnamese(element.data.col) === this.common.nonAccentVietnamese(node.data.col)) {
+        element.data.forEach(el => {
+          if (node.data[el] && (+element.data[el] === 0 || !element.data[el])) {
+            element.data[el] = node.data[el];
+          }
+        });
+        return true;
+      }
+      if (element.children.length > 0) {
+        result = this.RecursionReplaceDataTable(element.children, node);
+        if (result) {
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+
   FomatHeader(hearder: HeaderReport24h): string {
     const typeStr = hearder.type === 'percent' ? '%' : '';
     return typeStr + hearder.quarter + '/' + hearder.year;
@@ -191,11 +210,19 @@ export class Report24hmoneyComponent implements OnInit {
   numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-  onclick_Table(val) {
-    this.model.Calculator += '{' + val.node.data.col + '}';
+  onclick_Table(row, index) {
+    switch (+this.option.FormularType) {
+      case FormulaTypeEnum.Col:
+        this.model.Calculator += '{' + row.node.data.col + '}';
+        break;
+      case FormulaTypeEnum.Number:
+        const colField = this.cols[index].field;
+        this.model.Calculator += row.node.data[colField]
+        break;
+    }
     this.calculator.nativeElement.focus();
   }
-  CalculateRow(){
+  CalculateRow() {
     const node = {
       data: {
         col: this.model.CalculatorName,
@@ -208,47 +235,47 @@ export class Report24hmoneyComponent implements OnInit {
     for (let i = 0; i < this.model.SelectedCols.length; i++) {
       let objData = {};
       let calculateStr = '';
-      if(match && match.length > 0){
+      if (match && match.length > 0) {
         match.forEach(element => {
           const getCol = this.RecursionData(this.tableData, element);
-          if(getCol){
-            objData[element] =  getCol.data[this.model.SelectedCols[i].field];
+          if (getCol) {
+            objData[element] = getCol.data[this.model.SelectedCols[i].field];
           }
-         });
+        });
       }
-       if(Object.keys(objData).length > 0 ){
+      if (Object.keys(objData).length > 0) {
         // tslint:disable-next-line: no-shadowed-variable
-        const replaceComma = this.FomatString(this.model.Calculator, objData).replace(/\,/gi,'')
-         calculateStr  =   '{result:' +replaceComma + '}';
-         isSaveFormula = true;
-       }
-       else{
-        const replaceComma = this.model.Calculator.replace(/\,/gi,'')
-        calculateStr  =   '{result:' + replaceComma + '}';
-       }
+        const replaceComma = this.FomatString(this.model.Calculator, objData).replace(/\,/gi, '')
+        calculateStr = '{result:' + replaceComma + '}';
+        isSaveFormula = true;
+      }
+      else {
+        const replaceComma = this.model.Calculator.replace(/\,/gi, '')
+        calculateStr = '{result:' + replaceComma + '}';
+      }
       const resultCalculate = this.looseJsonParse(calculateStr);
       const colField = this.model.SelectedCols[i].field;
       node.data[colField] = resultCalculate.result.toFixed(2);
     }
-  // tslint:disable-next-line: max-line-length
-  const existRowInTable = this.tableData.find(x=> this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
-    if(existRowInTable){
+    // tslint:disable-next-line: max-line-length
+    const existRowInTable = this.tableData.find(x => this.common.nonAccentVietnamese(x.data.col) === this.common.nonAccentVietnamese(node.data.col));
+    if (existRowInTable) {
       Object.keys(node.data).forEach(element => {
-          if(element !== 'col' && node.data[element]){
-            existRowInTable.data[element] = node.data[element];
-          }
+        if (element !== 'col' && node.data[element]) {
+          existRowInTable.data[element] = node.data[element];
+        }
       });
     }
-    else{
+    else {
       this.tableData.push(node);
     }
-    if(isSaveFormula){
-      const formulaModel:CalculationFormula = {
+    if (isSaveFormula) {
+      const formulaModel: CalculationFormula = {
         Name: this.model.CalculatorName,
         Caculate: this.model.Calculator,
-        Search_Filed : this.common.nonAccentVietnamese(this.model.CalculatorName)
+        Search_Filed: this.common.nonAccentVietnamese(this.model.CalculatorName)
       }
-      this.api.r1_Post_Data(formulaModel, 'api/CalculationsFomula').subscribe(res =>{
+      this.api.r1_Post_Data(formulaModel, 'api/CalculationsFomula').subscribe(res => {
         console.log(res);
       });
     }
@@ -265,38 +292,38 @@ export class Report24hmoneyComponent implements OnInit {
     })
     return str;
   }
-// Tính toán
-looseJsonParse(obj) {
-  return Function(`"use strict";return (${obj})`)();
-}
-// Dùng regex lấy data trong {}
-RegexData(str){
-  const match = str.match(/(?<=({))[a-za-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹý , /]*(?=(}))/g);
-  return match;
-}
-
-/** Modal */
-open(content) {
-  this.modalReference = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title',modalDialogClass: 'dark-modal' })
-  this.modalReference.result.then(
-    (result) => {
-      this.closeResult = `Closed with: ${result}`;
-    },
-    (reason) => {
-      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-    },
-  );
-}
-
-private getDismissReason(reason: any): string {
-  if (reason === ModalDismissReasons.ESC) {
-    return 'by pressing ESC';
-  } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-    return 'by clicking on a backdrop';
-  } else {
-    return `with: ${reason}`;
+  // Tính toán
+  looseJsonParse(obj) {
+    return Function(`"use strict";return (${obj})`)();
   }
-}
+  // Dùng regex lấy data trong {}
+  RegexData(str) {
+    const match = str.match(/(?<=({))[a-za-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹý , /]*(?=(}))/g);
+    return match;
+  }
+
+  /** Modal */
+  open(content) {
+    this.modalReference = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', modalDialogClass: 'dark-modal' })
+    this.modalReference.result.then(
+      (result) => {
+        this.closeResult = `Closed with: ${result}`;
+      },
+      (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      },
+    );
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
 
 }
 
