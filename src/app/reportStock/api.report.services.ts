@@ -62,7 +62,7 @@ export class ApiReportComponent {
         const options: any = {
           ContentType: 'application/json; charset=utf-8',
         };
-        return this.http.post<any>(this._urlApi + url, options);
+        return this.http.get<any>(this._urlApi + url, options);
       }
 }
 export class HeaderReport24h{

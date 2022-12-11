@@ -10,7 +10,7 @@ import { CommonServiceComponent } from 'src/app/common/service/common.services';
 import { CalculationFormula } from 'src/model/CalculationFormula';
 import { map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { ModelEnums } from 'src/app/common/Model/CommonModel';
+import { CommonCategory, ModelEnums } from 'src/app/common/Model/CommonModel';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -24,6 +24,7 @@ export class Report24hmoneyComponent implements OnInit {
   formulaTypes: ModelEnums[] = [];
   option: OptionReport24h = new OptionReport24h();
   dropdownSettings: IDropdownSettings;
+  calculationsFomula: CommonCategory[] = [];
   tableData: TreeNode[] = [];
   resultApi: any[] = [];
   cols: any[] = [{ field: 'col', header: 'Tiêu đề' }];
@@ -33,19 +34,16 @@ export class Report24hmoneyComponent implements OnInit {
   closeResult = '';
   modalReference: any;
   multipleSelect = [];
-  options: string[] = ['One', 'Two', 'Three'];
-  filteredOptions: Observable<string[]>;
+  filteredOptions: Observable<CommonCategory[]>;
+  formular : string;
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
   constructor(private api: ApiReportComponent, private modalService: NgbModal, private common: CommonServiceComponent) {
   }
   ngOnInit(): void {
-    this.filteredOptions = this.control.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
     this.GetFinacialReportType();
     this.GetFormulaTypes()
     this.GetData();
+    this.GetCaculationsFormula();
     this.dropdownSettings = {
       singleSelection: false,
       idField: 'field',
@@ -128,11 +126,22 @@ export class Report24hmoneyComponent implements OnInit {
   SearchReport() {
     this.GetData();
   }
-  handleTable
+  GetCaculationsFormula(){
+    this.api.r1_Get_Data('api/CalculationsFomula').subscribe(res =>{
+      if(res.state){
+        this.calculationsFomula = res.data.map(x => ({Id: x.Caculate, Name: x.Name }));
+        this.filteredOptions = this.control.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '')),
+        );
+        console.log(this.calculationsFomula);
+      }
+    })
+  }
   /** End Get values from api */
-  private _filter(value: string): string[] {
+  private _filter(value: string): CommonCategory[] {
     const filterValue = this._normalizeValue(value);
-    return this.options.filter(street => this._normalizeValue(street).includes(filterValue));
+    return this.calculationsFomula.filter(street => this._normalizeValue(street.Name).includes(filterValue))
   }
   private _normalizeValue(value: string) {
     return value.toLowerCase().replace(/\s/g, '');
@@ -144,7 +153,10 @@ export class Report24hmoneyComponent implements OnInit {
     console.log(items);
   }
 
-
+  Onchange_Formula(e){
+    this.control.setValue(e.value.Name);
+    this.model.Calculator = e.value.Id;
+  }
   RecursionData(data: TreeNode[], col: string): TreeNode {
     let result;
     // tslint:disable-next-line: prefer-for-of

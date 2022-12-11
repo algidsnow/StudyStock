@@ -6,3 +6,8 @@ export class ModelEnums{
     Id:number;
     Name: string;
 }
+export class CommonCategory{
+    Id:string;
+    Name: string;
+    Search_Field?: string;
+}

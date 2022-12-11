@@ -31,12 +31,13 @@
                      placeholder="Pick one"
                      aria-label="Number"
                      class="form-control"
-                     [matAutocomplete]="auto">
+                     [matAutocomplete]="auto"
+                    >
           <!-- #enddocregion input -->
           <!-- #docregion mat-autocomplete -->
-              <mat-autocomplete #auto="matAutocomplete">
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="Onchange_Formula($event.option)">
                 <mat-option *ngFor="let option of filteredOptions | async"  [value]="option">
-                  {{option}}
+                  {{option.Name}}
                 </mat-option>
               </mat-autocomplete>
           </div>
