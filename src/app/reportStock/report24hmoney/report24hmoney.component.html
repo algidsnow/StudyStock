@@ -39,7 +39,7 @@
                 <mat-option *ngFor="let option of filteredOptions | async"  [value]="option">
                   {{option.Name}}
                 </mat-option>
-              </mat-autocomplete>
+              </mat-autocomplete>          
           </div>
         </div>
         <div class="row">
@@ -53,6 +53,7 @@
                 {{op.Name}}
               </option>
             </select>
+            <button class="btn btn-danger" (click)="SaveData()" [disabled]="tableData.length == initTableData.length">Lưu</button>
             </div>
           <div class="col-md-1">
             <button class="btn btn-success" (click)="open(content)" [disabled]="!model.Calculator">Tính</button>

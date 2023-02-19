@@ -13,6 +13,7 @@ export class ApiReportComponent {
         const httpOptions: any =
         {
             ContentType: 'application/json; charset=utf-8',
+            // tslint:disable-next-line: max-line-length
             params: { "locale": "vi", "symbol": option.StockCode, "period": +option.Period, "view": +option.View, "page": 1, "expanded": true }
         };
         return new Observable<any>(obs =>{
@@ -78,9 +79,9 @@ export class OptionReport24h{
         this.FormularType = 1;
     }
     StockCode: string;
-    Period: number;
-    View: number;
-    FormularType?: number;
+    Period?: number;
+    View?: number;
+    FormularType: number;
 }
 export class CreateReport24hData{
     constructor(){

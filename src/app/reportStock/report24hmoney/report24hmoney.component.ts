@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+// tslint:disable-next-line: max-line-length
 import { ApiReportComponent, CreateReport24hData, FinanciReportTypeLabel, FormulaTypeEnum, FormulaTypeEnumLabel, HeaderReport24h, OptionReport24h } from '../api.report.services';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { CdkTreeNodeToggle, FlatTreeControl } from '@angular/cdk/tree';
@@ -11,6 +12,9 @@ import { CalculationFormula } from 'src/model/CalculationFormula';
 import { map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { CommonCategory, ModelEnums } from 'src/app/common/Model/CommonModel';
+import { FinancialReportRows } from 'src/app/common/Model/FinancialReportRows';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Snackbar } from 'src/app/common/service/snackbar.service';
 @Component({
   selector: 'app-report24hmoney',
   templateUrl: './report24hmoney.component.html',
@@ -26,7 +30,7 @@ export class Report24hmoneyComponent implements OnInit {
   dropdownSettings: IDropdownSettings;
   calculationsFomula: CommonCategory[] = [];
   tableData: TreeNode[] = [];
-  resultApi: any[] = [];
+  initTableData: TreeNode[] = [];
   cols: any[] = [{ field: 'col', header: 'Tiêu đề' }];
   // calculator =  '';
   // calculatorName = '';
@@ -37,7 +41,10 @@ export class Report24hmoneyComponent implements OnInit {
   filteredOptions: Observable<CommonCategory[]>;
   formular : string;
   // frozenCols: any[] =  [{ field: "col", header: "col" }];
-  constructor(private api: ApiReportComponent, private modalService: NgbModal, private common: CommonServiceComponent) {
+  constructor(private api: ApiReportComponent,
+    private modalService: NgbModal,
+    private common: CommonServiceComponent,
+    private _snackBar: Snackbar) {
   }
   ngOnInit(): void {
     this.GetFinacialReportType();
@@ -79,9 +86,17 @@ export class Report24hmoneyComponent implements OnInit {
   // GetListFormula
   GetData() {
     if (this.option.StockCode) {
-      this.cols = [{ field: "col", header: "Tiêu đề" }];
+      this.cols = [{ field: 'col', header: 'Tiêu đề' }];
       this.multipleSelect = [];
       this.tableData = [];
+      this.api.r1_Post_Data(this.option,'api/FinancialReportRows/GetData').subscribe(res =>{
+        if(res.state){
+          res.data.forEach(element => {
+            const row = JSON.parse(element.Data);
+            this.tableData.push(row);
+          });
+        }
+      })
       this.api.Get_Data_24hMoney(this.option).subscribe(x => {
         console.log(x);
         x.data.headers.forEach(element => {
@@ -113,13 +128,13 @@ export class Report24hmoneyComponent implements OnInit {
               break
             case 3:
               // tslint:disable-next-line: variable-name
-              let rowChild_lv3 = this.FillDataForCol(this.cols, element);
+              const rowChild_lv3 = this.FillDataForCol(this.cols, element);
               rowChild_lv2.children.push(rowChild_lv3)
               break;
           }
         });
         this.tableData = this.tableData.slice();
-        this.resultApi = x.data.rows;
+        this.initTableData =  JSON.parse(JSON.stringify(this.tableData))
       });
     }
   }
@@ -129,7 +144,7 @@ export class Report24hmoneyComponent implements OnInit {
   GetCaculationsFormula(){
     this.api.r1_Get_Data('api/CalculationsFomula').subscribe(res =>{
       if(res.state){
-        this.calculationsFomula = res.data.map(x => ({Id: x.Caculate, Name: x.Name }));
+        this.calculationsFomula = res.data.map(x => ({Id: x.Caculate, Name: x.Name, Search_Field: x.Search_Field }));
         this.filteredOptions = this.control.valueChanges.pipe(
           startWith(''),
           map(value => this._filter(value || '')),
@@ -215,7 +230,7 @@ export class Report24hmoneyComponent implements OnInit {
     for (let i = 1; i < cols.length; i++) {
       const colField = cols[i].field;
       const colData = datafill.values[i - 1]
-      node.data[colField] = !colData ? "0" : typeof colData === "number" ? this.numberWithCommas(colData) : colData;
+      node.data[colField] = !colData ? '0' : typeof colData === 'number' ? this.numberWithCommas(colData) : colData;
     }
     return node;
   }
@@ -244,8 +259,9 @@ export class Report24hmoneyComponent implements OnInit {
     }
     let isSaveFormula = false;
     const match = this.RegexData(this.model.Calculator);
+    // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < this.model.SelectedCols.length; i++) {
-      let objData = {};
+      const objData = {};
       let calculateStr = '';
       if (match && match.length > 0) {
         match.forEach(element => {
@@ -281,7 +297,9 @@ export class Report24hmoneyComponent implements OnInit {
     else {
       this.tableData.push(node);
     }
-    if (isSaveFormula) {
+    // tslint:disable-next-line: max-line-length
+    const checkExistFormala = this.calculationsFomula.findIndex(x=> x.Search_Field === this.common.nonAccentVietnamese(this.model.CalculatorName));
+    if (isSaveFormula && !checkExistFormala) {
       const formulaModel: CalculationFormula = {
         Name: this.model.CalculatorName,
         Caculate: this.model.Calculator,
@@ -293,6 +311,24 @@ export class Report24hmoneyComponent implements OnInit {
     }
     this.tableData = this.tableData.slice();
     this.modalReference.close();
+  }
+  SaveData() :void{
+    const difference = this.tableData.filter(x => this.initTableData.findIndex(v=> v.data.col === x.data.col) < 0);
+    const modelDatas = [];
+    difference.forEach(element => {
+      const model: FinancialReportRows ={
+        RowName: element.data.col,
+        StockCode: this.option.StockCode,
+        Data: JSON.stringify(element),
+        ReportType: this.option.View
+      };
+      modelDatas.push(model);
+    });
+    this.api.r1_Post_Data(modelDatas, 'api/FinancialReportRows').subscribe(res=>{
+      if(res.state){
+        this._snackBar.open(res.message)
+      }
+    })
   }
   // replace chuỗi thành số
   FomatString(str: string, arr): string {
@@ -338,42 +374,3 @@ export class Report24hmoneyComponent implements OnInit {
   }
 
 }
-
-
-
-// Demo data
-    //   this.cols = [
-    //     { field: 'name', header: 'First Name' },
-    //     { field: 'age', header: 'Age' },
-    // ];
-    // this.tableData = [
-    //     {
-    //         data: {
-    //             col: 'David',
-    //             // age: '40',
-    //         },
-    //         children: [
-    //             {
-    //                 data: {
-    //                     col: 'Nathan',
-    //                     age: '16',
-    //                 },
-    //                 children: [
-    //                   {
-    //                       data: {
-    //                           col: 'Nathan',
-    //                           age: '16',
-    //                       },
-
-    //                   }],
-    //             },
-
-    //             {
-    //                 data: {
-    //                     col: 'Shane',
-    //                     age: '14',
-    //                 },
-    //             },
-    //         ],
-    //     },
-    // ]
